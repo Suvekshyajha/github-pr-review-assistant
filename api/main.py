@@ -5,9 +5,8 @@ from indexing.bm25 import BM25Index
 from indexing.loader import index_repo
 from indexing.retriever import HybridRetriever
 from graph.graph import build_graph
-from api.routes import review, history, webhook
+from api.routes import review, history, webhook, repos
 from api.db import init_db
-from api.routes import review, history, webhook, repos  # add repos
 
 app = FastAPI(title="PR Review Agent")
 
@@ -22,14 +21,14 @@ def setup():
     retriever = HybridRetriever(db, bm25)
     built_graph = build_graph(retriever)
     review.graph = built_graph
-    webhook.graph = built_graph      # ← same graph, shared
+    webhook.graph = built_graph
     print("✅ Graph built and ready")
 
 app.include_router(review.router)
 app.include_router(history.router)
 app.include_router(webhook.router)
+app.include_router(repos.router)
 
 @app.get("/")
 def health_check():
     return {"status": "Backend reachable"}
-app.include_router(repos.router)
