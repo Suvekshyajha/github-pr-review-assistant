@@ -200,8 +200,7 @@ Runs on: `http://localhost:5173`
 ---
 ## 🐳 Docker
 
-The application can be run using Docker Compose with separate containers for the
-FastAPI backend and React frontend.
+The application can be run using Docker Compose with separate containers for the FastAPI backend and React frontend.
 
 ### Docker Architecture
 
@@ -229,6 +228,106 @@ FastAPI backend and React frontend.
               │ ChromaDB  │          │  SQLite   │
               │  storage  │          │  reviews  │
               └───────────┘          └───────────┘
+```
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+- A `.env` file containing the required API keys
+
+Create a `.env` file in the project root:
+
+```env
+GITHUB_TOKEN=your_github_token_here
+GROQ_API_KEY=your_groq_key_here
+WEBHOOK_BASE_URL=https://your-app.onrender.com
+```
+
+### Run with Docker Compose
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+This builds and starts both the frontend and backend containers.
+
+The application will be available at:
+
+- **Frontend:** `http://localhost`
+- **Backend:** `http://localhost:8000`
+
+The frontend is served through Nginx. API requests under `/api/` are proxied to the FastAPI backend container.
+
+### Run in the Background
+
+To run the application in detached mode:
+
+```bash
+docker compose up --build -d
+```
+
+### Stop the Application
+
+```bash
+docker compose down
+```
+
+### Rebuild the Containers
+
+If you make changes to the application or Docker configuration:
+
+```bash
+docker compose up --build
+```
+
+### Persistent Data
+
+Docker Compose mounts the following application data:
+
+```text
+./chroma_db  →  /app/chroma_db
+./reviews.db →  /app/reviews.db
+```
+
+This allows the ChromaDB index and SQLite review history to persist when the containers are stopped or recreated.
+
+### Docker Files
+
+```text
+github-pr-review-assistant/
+│
+├── Dockerfile                  # Backend Docker image
+├── docker-compose.yml           # Multi-container configuration
+├── .dockerignore
+│
+└── frontend/
+    ├── Dockerfile              # Frontend build + Nginx image
+    └── nginx.conf              # SPA serving + API reverse proxy
+```
+
+The frontend uses a multi-stage Docker build: Node.js builds the React application, and the resulting static files are served using Nginx.
+
+The backend container runs FastAPI using Uvicorn on port `8000`.
+
+### Nginx Configuration
+
+Nginx serves the React application and handles client-side routing using the `index.html` fallback.
+
+API requests beginning with `/api/` are reverse-proxied to the backend container:
+
+```text
+Browser
+   │
+   ├── /          → Nginx → React application
+   │
+   └── /api/*     → Nginx → backend:8000
+```
+
+This allows the frontend and backend to communicate through the Docker network without exposing the backend directly to the browser.
+
 --
 ## 📸 Screenshots
 
