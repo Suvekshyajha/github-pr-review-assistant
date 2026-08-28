@@ -201,7 +201,6 @@ Runs on: `http://localhost:5173`
 
 ## 📸 Screenshots
 
-> Screenshots coming soon — frontend in progress.
 
 
 
@@ -212,7 +211,7 @@ Live history:
 Review History:
 <img width="1912" height="860" alt="Screenshot 2026-08-27 224104" src="https://github.com/user-attachments/assets/f503bd31-725f-4c85-9337-2fa397357071" />
 
--->
+
 
 ---
 
