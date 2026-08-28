@@ -7,7 +7,7 @@ A context-aware pull request review agent that indexes an entire GitHub reposito
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
 ![LangGraph](https://img.shields.io/badge/LangGraph-latest-1C3C3C?style=flat)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-embedded-orange?style=flat)
-![Groq](https://img.shields.io/badge/LLaMA_3_70B-Groq-F55036?style=flat)
+![Groq](https://img.shields.io/badge/openai/gpt-oss-120b-Groq-F55036?style=flat)
 
 ---<img width="1918" height="852" alt="Screenshot 2026-08-27 224056" src="https://github.com/user-attachments/assets/e9937b9d-f816-4123-a3c8-a9d8a4feb610" />
 <img width="1918" height="857" alt="Screenshot 2026-08-27 224028" src="https://github.com/user-attachments/assets/9816c885-5967-46c9-8f66-7d892e9b180b" />
