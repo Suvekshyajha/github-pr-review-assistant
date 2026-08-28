@@ -9,10 +9,10 @@ A context-aware pull request review agent that indexes an entire GitHub reposito
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-embedded-orange?style=flat)
 ![Groq](https://img.shields.io/badge/openai/gpt-oss-120b-Groq-F55036?style=flat)
 
----<img width="1918" height="852" alt="Screenshot 2026-08-27 224056" src="https://github.com/user-attachments/assets/e9937b9d-f816-4123-a3c8-a9d8a4feb610" />
+
 <img width="1918" height="857" alt="Screenshot 2026-08-27 224028" src="https://github.com/user-attachments/assets/9816c885-5967-46c9-8f66-7d892e9b180b" />
 
-<img width="1912" height="860" alt="Screenshot 2026-08-27 224104" src="https://github.com/user-attachments/assets/e046fa72-ee40-4c54-8653-4cb0266c6a15" />
+
 
 ## 📌 Project Scope
 
@@ -203,11 +203,15 @@ Runs on: `http://localhost:5173`
 
 > Screenshots coming soon — frontend in progress.
 
-<!-- Add screenshots here once complete:
-![Connect Repository](docs/screenshots/connect.png)
-![Live Activity](docs/screenshots/live-activity.png)
-![Review Detail](docs/screenshots/review-detail.png)
-![History](docs/screenshots/history.png)
+
+
+Home page/Connect a Repo:
+<img width="1918" height="857" alt="Screenshot 2026-08-27 224028" src="https://github.com/user-attachments/assets/01d0082c-e4da-46f1-8fa5-378fe12e60ef" />
+Live history:
+<img width="1918" height="852" alt="Screenshot 2026-08-27 224056" src="https://github.com/user-attachments/assets/1c9aefed-ee96-456d-a834-fb9fa8e4056c" />
+Review History:
+<img width="1912" height="860" alt="Screenshot 2026-08-27 224104" src="https://github.com/user-attachments/assets/f503bd31-725f-4c85-9337-2fa397357071" />
+
 -->
 
 ---
@@ -288,26 +292,8 @@ Code is full of exact tokens (function names, import paths, variable names) that
 | `chunk_overlap` | `indexing/splitter.py` | Overlap between chunks (default: 50) |
 | `model` | `llm/reviewer.py` | LLM model (default: `llama3-70b-8192`) |
 
----
 
-## ✅ Project Checklist
 
-- [x] **GitHub integration** — repo tree fetching, file content, PR diff, PR comments, webhook management
-- [x] **Language-aware chunking** — `RecursiveCharacterTextSplitter` with Python/JS/TS language modes
-- [x] **Vector embeddings** — `all-MiniLM-L6-v2` via sentence-transformers, stored in ChromaDB
-- [x] **BM25 keyword index** — `rank-bm25`, built in-memory from indexed chunks
-- [x] **Hybrid retriever** — merges and deduplicates ChromaDB + BM25 results
-- [x] **LangGraph pipeline** — fetch diff → retrieve context → LLM review → post comment
-- [x] **Per-repo graph registry** — lazy indexing, isolated ChromaDB collections per repo
-- [x] **FastAPI backend** — `/review`, `/history`, `/webhook`, `/repos` endpoints
-- [x] **SQLite persistence** — review history + connected repos stored locally
-- [x] **Webhook automation** — auto-review on PR open via GitHub webhooks + FastAPI BackgroundTasks
-- [x] **React frontend** — Connect, Live Activity, and History views
-- [x] **CORS configured** — frontend at `localhost:5173` can reach backend at `localhost:8000`
-- [ ] **Deployment** — Render deploy + live webhook testing
-- [ ] **Screenshots** — UI screenshots in `docs/screenshots/`
-
----
 
 ## ⚠️ Important Notes
 
@@ -320,6 +306,30 @@ Code is full of exact tokens (function names, import paths, variable names) that
 
 ---
 
-## ⚠️ Disclaimer
+## Known Limitations & Future Improvements
 
-This project is for educational and portfolio purposes. Review quality depends on the LLM and retrieved context — always have a human review before merging production code.
+- **Synchronous first-time indexing**: When a repository is reviewed for the first time, 
+  the system indexes it (fetching, chunking, and embedding the codebase) synchronously 
+  before generating the review. For small repositories this completes in a few seconds; 
+  for large repositories, the first review request will be noticeably slower while the 
+  user waits on that single call. Subsequent reviews on the same repository reuse the 
+  cached index and run at normal speed.
+
+  **Planned improvement**: trigger indexing as a background task at the moment a 
+  repository is connected (via `/repos/connect`), rather than lazily on the first 
+  review request — so indexing overhead is absorbed upfront rather than surfaced to 
+  the user during their first PR review.
+
+- **In-memory graph registry**: Compiled LangGraph instances and their retrievers are 
+  currently cached in a Python dictionary in server memory. This means the cache is 
+  lost on server restart, requiring re-indexing after every deploy or crash.
+
+  **Planned improvement**: persist indexing state to disk/database so re-indexing is 
+  only needed when repository content actually changes, not on every server restart.
+
+- **Ephemeral storage on free-tier hosting**: When deployed on Render's free tier, 
+  local storage (ChromaDB files, SQLite review history) is wiped on redeploy, since 
+  the free tier does not provide persistent disk.
+
+  **Planned improvement**: migrate to a hosted vector database and Postgres (e.g. via 
+  Supabase or Neon's free tiers) for true persistence across deploys.
