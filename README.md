@@ -198,7 +198,38 @@ npm run dev
 Runs on: `http://localhost:5173`
 
 ---
+## 🐳 Docker
 
+The application can be run using Docker Compose with separate containers for the
+FastAPI backend and React frontend.
+
+### Docker Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │      Frontend        │
+                    │   React + Vite       │
+                    │      + Nginx         │
+                    │      Port 80         │
+                    └──────────┬───────────┘
+                               │
+                         /api/ requests
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │       Backend        │
+                    │ FastAPI + Uvicorn    │
+                    │      Port 8000       │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────┴───────────┐
+                    │                      │
+                    ▼                      ▼
+              ┌───────────┐          ┌───────────┐
+              │ ChromaDB  │          │  SQLite   │
+              │  storage  │          │  reviews  │
+              └───────────┘          └───────────┘
+--
 ## 📸 Screenshots
 
 
